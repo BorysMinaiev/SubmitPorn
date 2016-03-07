@@ -8,11 +8,19 @@
 #include <vector>
 
 template <typename T>
+struct sum_composer {
+  T operator()(T const & a, T const & b) const {
+    return a + b;
+  }
+};
+
+template <typename T, template<typename> class Composer >
 class segment_tree {
 public:
   int n;
   std::vector<T> const & a;
   std::vector<T> t;
+  Composer<T> composer;
 
   segment_tree(std::vector<T> const & a)
     : a(a)
@@ -39,7 +47,7 @@ private:
     int tm = (tl + tr) / 2;
     build(2 * v + 1, tl, tm);
     build(2 * v + 2, tm, tr);
-    t[v] = t[2 * v + 1] + t[2 * v + 2];
+    t[v] = composer(t[2 * v + 1], t[2 * v + 2]);
   }
 
   T get(int v, int tl, int tr, int l, int r) {
@@ -50,7 +58,7 @@ private:
       return 0;
     }
     int tm = (tl + tr) / 2;
-    return get(2 * v  +1, tl, tm, l, r) + get(2 * v + 2, tm, tr, l, r);
+    return composer(get(2 * v  +1, tl, tm, l, r), get(2 * v + 2, tm, tr, l, r));
   }
 
   void set(int v, int tl, int tr, int i, T val) {
@@ -64,8 +72,10 @@ private:
     } else {
       set(2 * v + 2, tm, tr, i, val);
     }
-    t[v] = t[2 * v + 1] + t[2 * v + 2];
+    t[v] = composer(t[2 * v + 1], t[2 * v + 2]);
   }
 };
 
+template <typename T>
+  using sum_segment_tree = segment_tree<T, sum_composer>;
 #endif //SUBMITPORN_SEGMENT_TREE_H

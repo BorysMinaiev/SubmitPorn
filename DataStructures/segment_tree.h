@@ -14,6 +14,20 @@ struct sum_composer {
   }
 };
 
+template <typename T>
+struct min_composer {
+   T operator()(T const & a, T const & b) const {
+    return std::min(a, b);
+  }
+};
+
+template <typename T>
+struct max_composer {
+   T operator()(T const & a, T const & b) const {
+    return std::max(a, b);
+  }
+};
+
 template <typename T, template<typename> class Composer >
 class segment_tree {
 public:
@@ -78,4 +92,8 @@ private:
 
 template <typename T>
   using sum_segment_tree = segment_tree<T, sum_composer>;
+template <typename T>
+  using min_segment_tree = segment_tree<T, min_composer>;
+template <typename T>
+  using max_segment_tree = segment_tree<T, max_composer>;
 #endif //SUBMITPORN_SEGMENT_TREE_H
